@@ -2,17 +2,20 @@
   <div id="app">
     <main>
       <div class="search-box">
-        <input  type="text" class="search-bar" placeholder="search......">
+        <input  type="text" class="search-bar" placeholder="search......"
+        v-model="querry"
+        @keypress="fetchWeather"/>
+
       </div>
 
-      <div class="weather-wrap">
+      <div class="weather-wrap" v-if='typeof weather.main != "undefined"'>
         <div class="location-box">
-          <div class="location">Namakkal, IN</div>
+          <div class="location">{{ weather.name }} , {{weather.sys.country}}</div>
           <div class="date">Friday 19 March 2020</div>
         </div>
         <div class="weather-box">
-          <div class="temp">27ºC</div>
-          <div class="weather">Wind</div>
+          <div class="temp"> 27ºC </div>
+          <div class="weather"> Wind </div>
         </div>
       </div>
     </main>
@@ -24,7 +27,23 @@ export default {
   name: 'App',
   data(){
     return{
-      api_key: 'c0825b617850cd56d1a28266246d727f'
+      api_key: 'c0825b617850cd56d1a28266246d727f',
+      url_base: 'https://openweathermap.org/data/2.5',
+      querry: '',
+      weather: {}
+    }
+  },
+  methods:{
+    fetchWeather(e){
+        if(e.key == "Enter"){
+          fetch(`${this.url_base}weather?q=${this.querry}&units=metric&APPID=${this.api_key}`)
+            .then(res => {
+              return res.json();
+            }).then(this.setResults);
+        }
+    },
+    setResults(results){
+      this.weather = results;
     }
   }
 }
